@@ -1,0 +1,39 @@
+configfile: "config/config.yml"
+
+##################################################################
+##                    Define input functions                    ##
+##################################################################
+
+# Author: Chris Sansam
+# Date: February 11, 2025
+
+import pandas as pd
+
+# read the CSV file and set an index using the values in the "sample" column.
+#samples_table = pd.read_csv("config/samples.csv").set_index("sample", drop=False)
+
+##################################################################
+##                          Rule All                            ##
+##################################################################
+
+rule all:
+    input:
+        "results/MiniMapIndex/genome.mmi"
+
+##################################################################
+##                     Make genome index                        ##
+##################################################################
+
+rule make_genome_index:
+    params:
+        genome_link=config["genome_address"]
+    output:
+        genome_fasta="results/MiniMapIndex/genome.fa",
+        genome_index="results/MiniMapIndex/genome.mmi"
+    envmodules:
+        config["minimap2"]
+    shell:
+        """
+        wget -qO- {params.genome_link} | gunzip > {output.genome_fasta}
+        minimap2 -x map-ont -d {output.genome_index} {output.genome_fasta}
+        """
