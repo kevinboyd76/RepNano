@@ -42,7 +42,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 
 # Ensure `lib/` is in `sys.path`
-LIB_PATH = os.path.join(PROJECT_ROOT, "lib")
+LIB_PATH = os.path.join(SCRIPT_DIR, "lib")
 sys.path.insert(0, LIB_PATH)
 
 # Import helper functions
