@@ -1,0 +1,5 @@
+# UCSC genome address
+genome_address: "http://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz"
+
+# Modules
+minimap2: "minimap2/2.28"
