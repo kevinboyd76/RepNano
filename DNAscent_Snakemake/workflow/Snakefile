@@ -9,8 +9,8 @@ configfile: "config/config.yml"
 
 import pandas as pd
 
-# read the CSV file and set an index using the values in the "sample" column.
-samples_table = pd.read_csv("config/samples.csv").set_index("sample", drop=False)
+# read the CSV file and set an index using the values in the "alias" column.
+samples_table = pd.read_csv("config/samples.csv").set_index("alias", drop=False)
 
 ##################################################################
 ##                          Rule All                            ##
@@ -47,7 +47,7 @@ rule Dorado_baseCalling_alignment:
         genome_index="results/MiniMapIndex/genome.mmi",
         pod5dir=lambda wildcards: directory(samples_table.loc[wildcards.sample, "directory"])
     output:
-        "results/aligned/{sample}_DoradoCallAndAlign.bam"
+        "results/aligned/{alias}_DoradoCallAndAlign.bam"
     params:
         kit=lambda wildcards: samples_table.loc[wildcards.sample, "kit"],
         mode=config["basecalling_mode"],
