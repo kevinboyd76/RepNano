@@ -54,7 +54,7 @@ rule Dorado_baseCalling_alignment:
         mode=config["basecalling_mode"],
         device=config["dorado_device"]
     envmodules:
-        config["minimap2"],
+        config["dorado"],
         config["cuda"]
     resources:
         cpus=6,
