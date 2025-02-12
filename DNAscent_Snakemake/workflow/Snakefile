@@ -18,7 +18,8 @@ samples_table = pd.read_csv("config/samples.csv").set_index("alias", drop=False)
 
 rule all:
     input:
-        "results/MiniMapIndex/genome.mmi"
+        "results/MiniMapIndex/genome.mmi",
+        expand("results/aligned/{alias}_DoradoCallAndAlign.bam",alias=samples_table.index)
 
 ##################################################################
 ##                     Make genome index                        ##
