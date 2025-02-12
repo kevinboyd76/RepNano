@@ -10,7 +10,7 @@ configfile: "config/config.yml"
 import pandas as pd
 
 # read the CSV file and set an index using the values in the "sample" column.
-#samples_table = pd.read_csv("config/samples.csv").set_index("sample", drop=False)
+samples_table = pd.read_csv("config/samples.csv").set_index("sample", drop=False)
 
 ##################################################################
 ##                          Rule All                            ##
@@ -44,22 +44,25 @@ rule make_genome_index:
 
 rule Dorado_baseCalling_alignment:
     input:
-        genome_index="results/MiniMapIndex/genome.mmi"
-    params:
-        genome_link=config["genome_address"]
+        genome_index="results/MiniMapIndex/genome.mmi",
+        pod5dir=lambda wildcards: directory(samples_table.loc[wildcards.sample, "directory"])
     output:
-        genome_fasta="results/MiniMapIndex/genome.fa",
-        genome_index="results/MiniMapIndex/genome.mmi"
+        "results/aligned/{sample}_DoradoCallAndAlign.bam"
+    params:
+        kit=lambda wildcards: samples_table.loc[wildcards.sample, "kit"],
+        mode=config["basecalling_mode"],
+        device=config["dorado_device"]
     envmodules:
-        config["minimap2"]
+        config["minimap2"],
+        config["cuda"]
     shell:
         """
         dorado basecaller \
-        sup \
-        --kit-name SQK-RBK114-96 \
-        --sample-sheet samples.csv \
-        --device cuda:all \
-        /archive/sansamc/NanoporeSequencing/20250129_Sansam/20250129/20250129_2003_P2S-02862-A_PBA15434_9993eed2/pod5/ \
-        --reference hg38MiniMapIndex/hg38.mmi > \
-        EduBrduTest_DoradoCallAndAlign_sup.bam
+        {params.mode} \
+        --kit-name {params.kit} \
+        --sample-sheet config/samples.csv \
+        --device {params.device} \
+        {input.pod5dir} \
+        --reference {input.genome_index} > {output}
         """
+
