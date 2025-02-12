@@ -5,9 +5,9 @@ __default__:
     cpus-per-task: 2
     mem:  16GB
     output: results/logs/slurm-%x.%A.%a.log
-Dorado_baseCalling_alignment:
-    cpus-per-task: 6 
-    mem: 64GB
-    gres: gpu:1
-    partition: gpu
-    constraint: a100|l40s
+# Dorado_baseCalling_alignment:
+#     cpus-per-task: 6 
+#     mem: 64GB
+#     gres: gpu:1
+#     partition: gpu
+#     constraint: a100|l40s
