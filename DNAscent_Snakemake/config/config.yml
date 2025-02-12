@@ -1,5 +1,8 @@
 # UCSC genome address
 genome_address: "http://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz"
-
+basecalling_mode: "sup"
+dorado_device: "cuda:all"
 # Modules
 minimap2: "minimap2/2.28"
+dorado: "dorado/0.8.1"
+cuda: "cuda/12.4.1"
