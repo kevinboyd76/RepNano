@@ -2,9 +2,13 @@
 __default__:
     account: sansam-lab
     partition: serial
-    time: 08:00:00 # time limit for each job
     cpus-per-task: 2
-    mem:  16G
+    mem:  16GB
     output: results/logs/slurm-%x.%A.%a.log
 make_genome_index:
     cpus-per-task: 24
+Dorado_baseCalling_alignment:
+    cpus-per-task: 6 
+    mem: 64GB
+    gres: gpu:a100:1
+    partition: wgpu
