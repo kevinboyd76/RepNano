@@ -56,12 +56,12 @@ rule Dorado_baseCalling_alignment:
     envmodules:
         config["dorado"],
         config["cuda"]
-    resources:
-        cpus=6,
-        mem_mb=64000,
-        gres="gpu:1",
-        partition="gpu",
-        #constraint="a100|l40s"
+    # resources:
+    #     cpus=6,
+    #     mem_mb=64000,
+    #     gres="gpu:1",
+    #     partition="gpu",
+    #     #constraint="a100|l40s"
     shell:
         """
         dorado basecaller {params.mode} --kit-name {params.kit} --sample-sheet config/samples.csv --device {params.device} {input.pod5dir}/ --reference {input.genome_index} > {output}
