@@ -37,3 +37,29 @@ rule make_genome_index:
         wget -qO- {params.genome_link} | gunzip > {output.genome_fasta}
         minimap2 -x map-ont -d {output.genome_index} {output.genome_fasta}
         """
+
+##################################################################
+##          Run basecalling/alignment with Dorado               ##
+##################################################################
+
+rule Dorado_baseCalling_alignment:
+    input:
+        genome_index="results/MiniMapIndex/genome.mmi"
+    params:
+        genome_link=config["genome_address"]
+    output:
+        genome_fasta="results/MiniMapIndex/genome.fa",
+        genome_index="results/MiniMapIndex/genome.mmi"
+    envmodules:
+        config["minimap2"]
+    shell:
+        """
+        dorado basecaller \
+        sup \
+        --kit-name SQK-RBK114-96 \
+        --sample-sheet samples.csv \
+        --device cuda:all \
+        /archive/sansamc/NanoporeSequencing/20250129_Sansam/20250129/20250129_2003_P2S-02862-A_PBA15434_9993eed2/pod5/ \
+        --reference hg38MiniMapIndex/hg38.mmi > \
+        EduBrduTest_DoradoCallAndAlign_sup.bam
+        """
