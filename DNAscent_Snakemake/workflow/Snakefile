@@ -56,7 +56,8 @@ rule Dorado_baseCalling_alignment:
     envmodules:
         config["dorado"],
         #config["cuda"]
-    # resources:
+    resources:
+        gres="gpu:a100:1"
     #     cpus=6,
     #     mem_mb=64000,
     #     gres="gpu:1",
