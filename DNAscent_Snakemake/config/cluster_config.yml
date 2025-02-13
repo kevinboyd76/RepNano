@@ -7,7 +7,7 @@ __default__:
     output: results/logs/slurm-%x.%A.%a.log
 Dorado_baseCalling_alignment:
     partition: gpu  # Use GPU partition for this rule
-    gres: "--gres=gpu:1 --constraint=a100|l40s"
+    gres: "--gres=gpu:1"
     cpus-per-task: 6
     mem: 16GB
 make_genome_index:
