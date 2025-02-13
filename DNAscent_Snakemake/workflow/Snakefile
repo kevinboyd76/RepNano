@@ -52,19 +52,13 @@ rule Dorado_baseCalling_alignment:
     params:
         kit=lambda wildcards: samples_table.loc[wildcards.alias, "kit"],
         mode=config["basecalling_mode"],
-        device=config["dorado_device"]
+        device=config["dorado_device"],
+        samples_sheet=config["nanopore_samples_sheet"]
     envmodules:
-        config["dorado"],
-        #config["cuda"]
-    resources:
-        gres="gpu:a100:1"
-    #     cpus=6,
-    #     mem_mb=64000,
-    #     gres="gpu:1",
-    #     partition="gpu",
-    #     #constraint="a100|l40s"
+        config["cuda"],
+        config["dorado"]
     shell:
         """
-        dorado basecaller {params.mode} --kit-name {params.kit} --sample-sheet config/samples.csv --device {params.device} {input.pod5dir}/ --reference {input.genome_index} > {output}
+        dorado basecaller {params.mode} --kit-name {params.kit} --sample-sheet {params.samples_sheet} --device {params.device} {input.pod5dir}/ --reference {input.genome_index} > {output}
         """
 

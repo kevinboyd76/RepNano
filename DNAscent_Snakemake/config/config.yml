@@ -1,4 +1,5 @@
 # UCSC genome address
+nanopore_samples_sheet: "config/samples_nanopore.csv"
 genome_address: "http://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz"
 basecalling_mode: "sup"
 dorado_device: "cuda:all"
