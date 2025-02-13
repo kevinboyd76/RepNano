@@ -11,4 +11,4 @@ Dorado_baseCalling_alignment:
     mem: 16GB
     gres: "gpu:1"
     partition: "gpu"
-    constraint: "a100|l40s"
+    #constraint: "a100|l40s"
