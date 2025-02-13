@@ -1,14 +1,16 @@
 # cluster_config.yml - cluster configuration
 __default__:
     account: sansam-lab
-    partition: serial
-    cpus-per-task: 2
-    mem:  16GB
+    partition: serial  # Default partition for CPU-only jobs
+    cpus-per-task: 4
+    mem: 16GB
     output: results/logs/slurm-%x.%A.%a.log
 Dorado_baseCalling_alignment:
+    partition: gpu  # Use GPU partition for this rule
+    gres: gpu:a100:1  # Request 1 A100 GPU
     cpus-per-task: 6
-    account: sansam-lab
     mem: 16GB
-    #gres: "gres=gpu:a100:1"
-    partition: "gpu"
-    #constraint: "a100|l40s"
+make_genome_index:
+    partition: serial  # Run on normal CPU nodes
+    cpus-per-task: 8
+    mem: 16GB
