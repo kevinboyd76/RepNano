@@ -55,7 +55,7 @@ rule Dorado_baseCalling_alignment:
         device=config["dorado_device"]
     envmodules:
         config["dorado"],
-        config["cuda"]
+        #config["cuda"]
     # resources:
     #     cpus=6,
     #     mem_mb=64000,
