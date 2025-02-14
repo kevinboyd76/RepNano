@@ -104,18 +104,18 @@ rule split_bams:
     input:
         discover_demuxed_files
     output:
-        split_dir=directory("results/split_bams/{experiment_id}")
+        directory("results/split_bams/{experiment_id}")
     params:
         reads_per_chunk=config["reads_per_chunk"],
         samtools_threads=config["samtools_threads"],
-        demux_dir=directory("results/demultiplexed/{experiment_id}_demuxdir")
+        demux_dir="results/demultiplexed/{experiment_id}_demuxdir"
     envmodules:
         config["samtools"]
     shell:
         """
         inputs=({params.demux_dir}/*.bam)
-        for i in "${!inputs[@]}"; do
-          in_bam="${inputs[$i]}"
-          ./bin/split_bam_by_reads.sh ${{in_bam}} {output.split_dir} {params.reads_per_chunk} {params.threads}"
+        for in_bam in "${inputs[@]}"; do
+          ./bin/split_bam_by_reads.sh "$in_bam" {output} {params.reads_per_chunk} {params.samtools_threads}"
         done
         """
+
