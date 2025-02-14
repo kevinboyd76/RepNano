@@ -69,35 +69,25 @@ rule Dorado_baseCalling_alignment:
 ##                   Demultiplex Alignments                     ##
 ##################################################################
 
-def get_output_files(wildcards):
-    """Generate multiple output files for a given experiment_id using aliases."""
-    matching_aliases = samples_table.loc[wildcards.experiment_id, "alias"]
-
-    # Ensure the result is a list (handles single and multiple aliases correctly)
-    if isinstance(matching_aliases, str):  
-        matching_aliases = [matching_aliases]  # Convert a single alias to a list
-    else:
-        matching_aliases = matching_aliases.tolist()  # Convert pandas Series to list
-    
-    return [
-        f"results/demultiplexed/{alias}_{wildcards.experiment_id}_DoradoCallAndAlignDemultiplexed.bam"
-        for alias in matching_aliases
-    ]
-
-rule demux_alignments:
+checkpoint demux_alignments:
     input:
         "results/aligned/{experiment_id}_DoradoCallAndAlign.bam"
     output:
-        lambda wildcards: get_output_files(wildcards)
-        #"results/demultiplexed/{alias}_{experiment_id}_DoradoCallAndAlignDemultiplexed.bam"
-    params:
-        samples_sheet=config["nanopore_samples_sheet"]
-    envmodules:
-        config["cuda"],
-        config["dorado"]
+        demux_dir=directory("results/demultiplexed/{experiment_id}_demuxdir")
     shell:
         """
-        outputName=$(basename {output})
-        dorado demux -o results/demultiplexed/ --no-classify --sample-sheet {params.samples_sheet} --no-trim --sort-bam ${outputName}
+        dorado demux -o {output.demux_dir} --no-classify \
+                     --sample-sheet {config[nanopore_samples_sheet]} \
+                     --no-trim --sort-bam {input}
         """
 
+def discover_demuxed_files(wildcards):
+    """Use the checkpoint output to find all alias-based files."""
+    checkpoint_output = checkpoints.demux_alignments.get(
+        experiment_id=wildcards.experiment_id
+    ).output.demux_dir
+    
+    # Now list or parse all files inside that directory
+    from glob import glob
+    files = glob(f"{checkpoint_output}/*.bam")
+    return files
