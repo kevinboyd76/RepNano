@@ -10,7 +10,8 @@ configfile: "config/config.yml"
 import pandas as pd
 
 # read the CSV file and set an index using the values in the "alias" column.
-samples_table = pd.read_csv("config/samples.csv").set_index("alias", drop=False)
+samples_table = pd.read_csv("config/samples.csv").set_index("experiment_id", drop=False)
+samples_table2 = pd.read_csv("config/samples.csv").set_index("alias", drop=False)
 
 ##################################################################
 ##                          Rule All                            ##
@@ -49,8 +50,8 @@ rule make_genome_index:
 rule Dorado_baseCalling_alignment:
     input:
         genome_index="results/MiniMapIndex/genome.mmi",
-        pod5dir=lambda wildcards: directory(samples_table[samples_table["experiment_id"] == wildcards.experiment_id]["path"].values[0])
-        #pod5dir=lambda wildcards: directory(samples_table.loc[wildcards.experiment_id, "path"])
+        #pod5dir=lambda wildcards: directory(samples_table[samples_table["experiment_id"] == wildcards.experiment_id]["path"].values[0])
+        pod5dir=lambda wildcards: directory(samples_table.loc[wildcards.experiment_id, "path"])
     output:
         "results/aligned/{experiment_id}_DoradoCallAndAlign.bam"
     params:
