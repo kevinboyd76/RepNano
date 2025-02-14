@@ -67,13 +67,23 @@ rule Dorado_baseCalling_alignment:
         dorado basecaller {params.mode} --kit-name {params.kit} --sample-sheet {params.samples_sheet} --device {params.device} {input.pod5dir}/ --reference {input.genome_index} > {output}
         """
 
-# ##################################################################
-# ##                   Demultiplex Alignments                     ##
-# ##################################################################
+##################################################################
+##                   Demultiplex Alignments                     ##
+##################################################################
 
-# rule demux_alignments:
-#     input:
-#         "results/aligned/{alias}_DoradoCallAndAlign.bam"
-#     output:
-#         expand("results/demultiplexed/{alias}_DoradoCallAndAlignDemultiplexed.bam",alias=samples_table.index)
+rule demux_alignments:
+    input:
+        "results/aligned/{experiment_id}_DoradoCallAndAlign.bam"
+    output:
+        expand("results/demultiplexed/{alias}_DoradoCallAndAlignDemultiplexed.bam",alias=samples_table2.index)
+    params:
+        samples_sheet=config["nanopore_samples_sheet"]
+    envmodules:
+        config["cuda"],
+        config["dorado"]
+    shell:
+        """
+        outputName=$(basename {output})
+        dorado demux -o results/demultiplexed/ --no-classify --sample-sheet {params.samples_sheet} --no-trim --sort-bam ${outputName}
+        """
 
