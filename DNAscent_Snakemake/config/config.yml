@@ -9,4 +9,5 @@ dorado: "dorado/0.8.1"
 cuda: "cuda/12"
 samtools: "samtools/1.18"
 
-reads_per_chunk: 1
+reads_per_chunk: "1"
+samtools_threads: "12"
