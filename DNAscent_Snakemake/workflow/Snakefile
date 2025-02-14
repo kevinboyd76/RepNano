@@ -22,7 +22,7 @@ rule all:
         "results/MiniMapIndex/genome.mmi",
         expand("results/aligned/{experiment_id}_DoradoCallAndAlign.bam", experiment_id=samples_table["experiment_id"].tolist()),
         expand("demultiplexed/{alias}_{experiment_id}_DoradoCallAndAlignDemultiplexed.bam", zip, experiment_id=samples_table["experiment_id"].tolist(),alias=samples_table["alias"].tolist()),
-        expand(directory("results/demultiplexed/{experiment_id}_demuxdir"),experiment_id=samples_table["experiment_id"].tolist())
+        expand("results/demultiplexed/{experiment_id}_demuxdir",experiment_id=samples_table["experiment_id"].tolist())
 
 ##################################################################
 ##                     Make genome index                        ##
