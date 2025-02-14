@@ -45,8 +45,6 @@ rule make_genome_index:
 ##          Run basecalling/alignment with Dorado               ##
 ##################################################################
 
-# I need to get file from experiment_id
-
 rule Dorado_baseCalling_alignment:
     input:
         genome_index="results/MiniMapIndex/genome.mmi",
@@ -72,11 +70,19 @@ rule Dorado_baseCalling_alignment:
 ##################################################################
 
 def get_output_files(wildcards):
-    matching_aliases = samples_table[samples_table["experiment_id"] == wildcards.experiment_id]["alias"].tolist()
-    return expand("demultiplexed/{alias}_{experiment_id}_DoradoCallAndAlignDemultiplexed.bam",
-                  alias=matching_aliases,
-                  experiment_id=wildcards.experiment_id)
+    """Generate multiple output files for a given experiment_id using aliases."""
+    matching_aliases = samples_table.loc[wildcards.experiment_id, "alias"]
 
+    # Ensure the result is a list (handles single and multiple aliases correctly)
+    if isinstance(matching_aliases, str):  
+        matching_aliases = [matching_aliases]  # Convert a single alias to a list
+    else:
+        matching_aliases = matching_aliases.tolist()  # Convert pandas Series to list
+    
+    return [
+        f"results/demultiplexed/{alias}_{wildcards.experiment_id}_DoradoCallAndAlignDemultiplexed.bam"
+        for alias in matching_aliases
+    ]
 
 rule demux_alignments:
     input:
