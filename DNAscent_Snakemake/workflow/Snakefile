@@ -93,3 +93,27 @@ def discover_demuxed_files(wildcards):
     from glob import glob
     files = glob(f"{checkpoint_output}/*.bam")
     return files
+
+
+##################################################################
+##                        Split BAMs                            ##
+##################################################################
+
+rule split_bams:
+    input:
+        discover_demuxed_files
+    output:
+    params:
+        reads_per_chunk=config["reads_per_chunk"],
+        samtools_threads=config["samtools_threads"],
+        demux_dir=directory("results/demultiplexed/{experiment_id}_demuxdir")
+    envmodules:
+        config["samtools"]
+    shell:
+        """
+        inputs=({params.demux_dir}/*.bam)
+        for i in "${!inputs[@]}"; do
+          in_bam="${inputs[$i]}"
+          ./bin/split_bam_by_reads.sh ${{in_bam}} {params.reads_per_chunk} {params.threads}"
+        done
+        """
