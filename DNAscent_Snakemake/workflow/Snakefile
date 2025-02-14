@@ -20,7 +20,9 @@ samples_table2 = pd.read_csv("config/samples.csv").set_index("alias", drop=False
 rule all:
     input:
         "results/MiniMapIndex/genome.mmi",
-        expand("results/aligned/{experiment_id}_DoradoCallAndAlign.bam", experiment_id=samples_table["experiment_id"])
+        expand("results/aligned/{experiment_id}_DoradoCallAndAlign.bam", experiment_id=samples_table["experiment_id"]),
+        expand("results/demultiplexed/{alias}_DoradoCallAndAlignDemultiplexed.bam",alias=samples_table2.index)
+
 
 
 ##################################################################
