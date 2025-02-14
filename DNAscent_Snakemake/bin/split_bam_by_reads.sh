@@ -12,6 +12,7 @@
 #
 # Arguments:
 #   <input.bam>   - Path to the input BAM file.
+#   <output_dir>  - Output directory
 #   <num_chunks>  - Number of chunks to split the BAM file into.
 #   <threads>     - Number of threads to use for samtools operations.
 #
@@ -27,15 +28,16 @@
 set -e  # Exit on error
 
 # Check for required arguments
-if [ "$#" -ne 3 ]; then
-  echo "Usage: $0 <input.bam> <reads_per_chunk> <threads>"
+if [ "$#" -ne 4 ]; then
+  echo "Usage: $0 <input.bam> <output_dir> <reads_per_chunk> <threads>"
   exit 1
 fi
 
 # Assign arguments to variables
 input_bam="$1"
-reads_per_chunk="$2"
-threads="$3"
+output_dir="$2"
+reads_per_chunk="$3"
+threads="$4"
 
 # Load samtools module if needed (uncomment for SLURM environments)
 # module load samtools
@@ -47,8 +49,6 @@ total_reads=$(samtools view -c -@ "$threads" "$input_bam")
 num_chunks=$(( (total_reads + reads_per_chunk - 1) / reads_per_chunk ))
 
 # Create output directory
-base_name=$(basename -s .bam "$input_bam")
-output_dir="split_bams/${base_name}"
 mkdir -p "$output_dir"
 
 # Extract and store the header
