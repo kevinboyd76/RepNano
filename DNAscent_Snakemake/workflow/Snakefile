@@ -51,7 +51,7 @@ rule Dorado_baseCalling_alignment:
         genome_index="results/MiniMapIndex/genome.mmi",
         pod5dir=lambda wildcards: directory(samples_table.loc[wildcards.experiment_id, "path"])
     output:
-        "results/aligned/{alias}_DoradoCallAndAlign.bam"
+        "results/aligned/{experiment_id}_DoradoCallAndAlign.bam"
     params:
         kit=lambda wildcards: samples_table.loc[wildcards.alias, "kit"],
         mode=config["basecalling_mode"],
