@@ -104,7 +104,7 @@ rule split_bams:
     input:
         discover_demuxed_files
     output:
-        directory("results/split_bams/{experiment_id}")
+        split_dir=directory("results/split_bams/{experiment_id}")
     params:
         reads_per_chunk=config["reads_per_chunk"],
         samtools_threads=config["samtools_threads"],
@@ -113,9 +113,11 @@ rule split_bams:
         config["samtools"]
     shell:
         """
-        inputs=({params.demux_dir}/*.bam)
-        for in_bam in "${inputs[@]}"; do
-          ./bin/split_bam_by_reads.sh "$in_bam" {output} {params.reads_per_chunk} {params.samtools_threads}"
+        inputs=("{params.demux_dir}"/*.bam)  # Expand BAM files inside demux directory
+
+        for in_bam in "${{inputs[@]}}"; do
+            echo "Processing file: $in_bam"  # Debugging step (optional)
+            ./bin/split_bam_by_reads.sh "$in_bam" "{output.split_dir}/" "{params.reads_per_chunk}" "{params.samtools_threads}"
         done
         """
 
