@@ -19,7 +19,8 @@ samples_table = pd.read_csv("config/samples.csv").set_index("alias", drop=False)
 rule all:
     input:
         "results/MiniMapIndex/genome.mmi",
-        expand("results/aligned/{alias}_DoradoCallAndAlign.bam",alias=samples_table.index)
+        expand("results/aligned/{experiment_id}_DoradoCallAndAlign.bam", experiment_id=samples_table["experiment_id"])
+
 
 ##################################################################
 ##                     Make genome index                        ##
@@ -43,10 +44,12 @@ rule make_genome_index:
 ##          Run basecalling/alignment with Dorado               ##
 ##################################################################
 
+# I need to get file from experiment_id
+
 rule Dorado_baseCalling_alignment:
     input:
         genome_index="results/MiniMapIndex/genome.mmi",
-        pod5dir=lambda wildcards: directory(samples_table.loc[wildcards.alias, "path"])
+        pod5dir=pod5dir=lambda wildcards: directory(samples_table.loc[wildcards.experiment_id, "path"])
     output:
         "results/aligned/{alias}_DoradoCallAndAlign.bam"
     params:
@@ -61,4 +64,14 @@ rule Dorado_baseCalling_alignment:
         """
         dorado basecaller {params.mode} --kit-name {params.kit} --sample-sheet {params.samples_sheet} --device {params.device} {input.pod5dir}/ --reference {input.genome_index} > {output}
         """
+
+# ##################################################################
+# ##                   Demultiplex Alignments                     ##
+# ##################################################################
+
+# rule demux_alignments:
+#     input:
+#         "results/aligned/{alias}_DoradoCallAndAlign.bam"
+#     output:
+#         expand("results/demultiplexed/{alias}_DoradoCallAndAlignDemultiplexed.bam",alias=samples_table.index)
 
