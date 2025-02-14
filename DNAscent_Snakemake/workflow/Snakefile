@@ -76,6 +76,8 @@ checkpoint demux_alignments:
         demux_dir=directory("results/demultiplexed/{experiment_id}_demuxdir")
     params:
         samples_sheet=config["nanopore_samples_sheet"]
+    envmodules:
+        config["dorado"]
     shell:
         """
         dorado demux -o {output.demux_dir} --no-classify --sample-sheet {params.samples_sheet} --no-trim --sort-bam {input}
