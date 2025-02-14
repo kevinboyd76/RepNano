@@ -71,11 +71,19 @@ rule Dorado_baseCalling_alignment:
 ##                   Demultiplex Alignments                     ##
 ##################################################################
 
+def get_output_files(wildcards):
+    matching_aliases = samples_table[samples_table["experiment_id"] == wildcards.experiment_id]["alias"].tolist()
+    return expand("demultiplexed/{alias}_{experiment_id}_DoradoCallAndAlignDemultiplexed.bam",
+                  alias=matching_aliases,
+                  experiment_id=wildcards.experiment_id)
+
+
 rule demux_alignments:
     input:
         "results/aligned/{experiment_id}_DoradoCallAndAlign.bam"
     output:
-        "results/demultiplexed/{alias}_{experiment_id}_DoradoCallAndAlignDemultiplexed.bam"
+        get_output_files
+        #"results/demultiplexed/{alias}_{experiment_id}_DoradoCallAndAlignDemultiplexed.bam"
     params:
         samples_sheet=config["nanopore_samples_sheet"]
     envmodules:
