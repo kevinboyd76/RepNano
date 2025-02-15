@@ -29,24 +29,15 @@ set -e  # Exit on error
 
 # Check for required arguments
 if [ "$#" -ne 4 ]; then
-  echo "Usage: $0 <input.bam> <output_dir> <reads_per_chunk> <threads>"
+  echo "Usage: $0 <input.bam> <output_dir> <num_chunks> <threads>"
   exit 1
 fi
 
 # Assign arguments to variables
 input_bam="$1"
 output_dir="$2"
-reads_per_chunk="$3"
+num_chunks="$3"
 threads="$4"
-
-# Load samtools module if needed (uncomment for SLURM environments)
-# module load samtools
-
-# Get total number of reads in BAM file
-total_reads=$(samtools view -c -@ "$threads" "$input_bam")
-
-# Compute number of chunks (Ceiling division)
-num_chunks=$(( (total_reads + reads_per_chunk - 1) / reads_per_chunk ))
 
 # Create output directory
 mkdir -p "$output_dir"

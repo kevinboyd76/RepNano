@@ -82,8 +82,8 @@ rule demux_alignments:
         """
         dorado demux -o "./results/demuxed/" --no-classify --sample-sheet {params.samples_sheet} --no-trim --sort-bam {input}
         alias_names=({params.alias_names})
-        for alias in ${{alias_names[@]}}; do mv $(ls ./results/demuxed/*.bam.bai | grep  _${{alias}}.bam) ${{alias}}.bam.bai; done
-        for alias in ${{alias_names[@]}}; do mv $(ls ./results/demuxed/*.bam | grep  _${{alias}}.bam) ${{alias}}.bam; done
+        for alias in ${{alias_names[@]}}; do mv $(ls ./results/demuxed/*.bam.bai | grep  _${{alias}}.bam.bai) ./results/demuxed/${{alias}}.bam.bai; done
+        for alias in ${{alias_names[@]}}; do mv $(ls ./results/demuxed/*.bam | grep  _${{alias}}.bam) ./results/demuxed/${{alias}}.bam; done
         """
 
 # def discover_demuxed_files(wildcards):
@@ -98,30 +98,30 @@ rule demux_alignments:
 #     return files
 
 
-# ##################################################################
-# ##                        Split BAMs                            ##
-# ##################################################################
+##################################################################
+##                        Split BAMs                            ##
+##################################################################
 
-# rule split_bams:
-#     input:
-#         discover_demuxed_files
-#     output:
-#         split_dir=directory("results/split_bams/{experiment_id}")
-#     params:
-#         reads_per_chunk=config["reads_per_chunk"],
-#         samtools_threads=config["samtools_threads"],
-#         demux_dir="results/demultiplexed/{experiment_id}_demuxdir"
-#     envmodules:
-#         config["samtools"]
-#     shell:
-#         """
-#         inputs=("{params.demux_dir}"/*.bam)  # Expand BAM files inside demux directory
+rule split_bams:
+    input:
+        expand("results/demuxed/{sample}.bam", sample=samples_table["alias"])
+    output:
+        split_dir=directory("results/split_bams/{experiment_id}")
+    params:
+        reads_per_chunk=config["chunks_per_bam"],
+        samtools_threads=config["samtools_threads"],
+        demux_dir="results/demultiplexed/{experiment_id}_demuxdir"
+    envmodules:
+        config["samtools"]
+    shell:
+        """
+        inputs=("{params.demux_dir}"/*.bam)  # Expand BAM files inside demux directory
 
-#         for in_bam in "${{inputs[@]}}"; do
-#             echo "Processing file: $in_bam"  # Debugging step (optional)
-#             ./bin/split_bam_by_reads.sh "$in_bam" "{output.split_dir}/" "{params.reads_per_chunk}" "{params.samtools_threads}"
-#         done
-#         """
+        for in_bam in "${{inputs[@]}}"; do
+            echo "Processing file: $in_bam"  # Debugging step (optional)
+            ./bin/split_bam_by_reads.sh "$in_bam" "{output.split_dir}/" "{params.reads_per_chunk}" "{params.samtools_threads}"
+        done
+        """
 
 
 # ##################################################################
