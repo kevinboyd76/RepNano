@@ -185,7 +185,7 @@ rule dnascent_forksense:
         terminations="results/forkSense/{sample}_chunk_{chunk}/terminations_DNAscent_forkSense.bed"
     params:
         label_order=config["label_order"],
-        forksense_threads=config["forkSense_threads"]
+        forkSense_threads=config["forkSense_threads"]
     envmodules:
         config["dnascent"],
         config["cuda"]
