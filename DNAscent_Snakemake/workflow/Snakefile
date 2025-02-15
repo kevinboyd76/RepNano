@@ -20,7 +20,7 @@ rule all:
     input:
         "results/MiniMapIndex/genome.mmi",
         "results/dnascent_index/index.dnascent",
-        expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(1,int(config["chunks_per_bam"])+1))
+        expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
 
 
 ##################################################################
@@ -107,7 +107,7 @@ rule split_bams:
     input:
         expand("results/demuxed/{sample}.bam", sample=samples_table["alias"])
     output:
-        expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(1,int(config["chunks_per_bam"])+1))
+        expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
     params:
         chunks_per_bam=config["chunks_per_bam"],
         samtools_threads=config["samtools_threads"],
