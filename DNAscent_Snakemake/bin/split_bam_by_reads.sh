@@ -8,11 +8,11 @@
 #   Each chunk retains the BAM header to ensure downstream compatibility.
 #
 # Usage:
-#   ./split_bam_by_chunks.sh <input.bam> <num_chunks> <threads>
+#   ./split_bam_by_chunks.sh <input.bam> <output_dir> <num_chunks> <threads>
 #
 # Arguments:
 #   <input.bam>   - Path to the input BAM file.
-#   <output_dir>  - Output directory
+#   <output_dir>  - Output directory.
 #   <num_chunks>  - Number of chunks to split the BAM file into.
 #   <threads>     - Number of threads to use for samtools operations.
 #
@@ -39,7 +39,7 @@ output_dir="$2"
 num_chunks="$3"
 threads="$4"
 
-base_name=$(basename -s .bam $input_bam)
+base_name=$(basename -s .bam "$input_bam")
 
 # Create output directory
 mkdir -p "$output_dir"
@@ -48,15 +48,22 @@ mkdir -p "$output_dir"
 header_file="${output_dir}/${base_name}_header.sam"
 samtools view -H "$input_bam" > "$header_file"
 
+# Determine the total number of reads in the BAM file
+total_reads=$(samtools view -c "$input_bam")
+reads_per_chunk=$(( (total_reads + num_chunks - 1) / num_chunks ))  # Round up division
+
+echo "Total reads in BAM: $total_reads"
+echo "Splitting into $num_chunks chunks, each containing approximately $reads_per_chunk reads."
+
 # Split BAM file into chunks
-echo "Splitting $input_bam into $num_chunks chunks using $threads threads..."
 for ((i=0; i<num_chunks; i++)); do
   start=$(( i * reads_per_chunk ))
+  end=$(( start + reads_per_chunk ))
+
   output_chunk="${output_dir}/${base_name}_chunk_${i}.bam"
 
-  # Extract reads and combine with the header to create a valid BAM file
-  samtools view -@ "$threads" "$input_bam" | awk -v start="$start" -v reads_per_chunk="$reads_per_chunk" \
-    'NR > start && NR <= start + reads_per_chunk' | \
+  # Extract reads in the specified range and combine with the header to create a valid BAM file
+  samtools view -@ "$threads" "$input_bam" | awk -v start="$start" -v end="$end" 'NR > start && NR <= end' | \
     cat "$header_file" - | samtools view -b -@ "$threads" > "$output_chunk"
 
   echo "Created: $output_chunk"
