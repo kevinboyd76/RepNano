@@ -154,7 +154,7 @@ rule dnascent_detect:
         expand("results/detect/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
     params:
         minimum_read_length=config["minimum_read_length"],
-        detect_threads=config[detect_threads]
+        detect_threads=config["detect_threads"]
     envmodules:
         config["dnascent"],
         config["cuda"]
