@@ -8,6 +8,7 @@ minimap2: "minimap2/2.28"
 dorado: "dorado/0.8.1"
 cuda: "cuda/12"
 samtools: "samtools/1.18"
-
+dnascent: "dnascent/4.0.3"
+pod5_directory: "./data/"
 reads_per_chunk: "1"
 samtools_threads: "12"
