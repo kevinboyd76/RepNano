@@ -82,6 +82,7 @@ rule demux_alignments:
         """
         dorado demux -o "./results/demuxed/" --no-classify --sample-sheet {params.samples_sheet} --no-trim --sort-bam {input}
         alias_names=({params.alias_names})
+        for alias in ${{alias_names[@]}}; do mv $(ls ./results/demuxed/*.bam.bai | grep  _${{alias}}.bam) ${{alias}}.bam.bai; done
         for alias in ${{alias_names[@]}}; do mv $(ls ./results/demuxed/*.bam | grep  _${{alias}}.bam) ${{alias}}.bam; done
         """
 
