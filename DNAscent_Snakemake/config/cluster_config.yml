@@ -33,3 +33,5 @@ dnascent_forksense:
     gres: "--gres=gpu:1"
     cpus-per-task: 12
     mem: 16GB
+sort_dnascent_detect:
+    cpus-per-task: 12
