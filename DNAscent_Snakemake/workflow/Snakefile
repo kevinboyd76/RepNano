@@ -20,7 +20,7 @@ rule all:
     input:
         expand("results/forkSense/{sample}_chunk_{chunk}/forksense.txt",sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"]))),
         expand("results/detect_combined/{sample}.bam",sample=samples_table["alias"]),
-        expand("results/detect_sorted/{sample}_chunk_{chunk}.bam",,sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
+        expand("results/detect_sorted/{sample}_chunk_{chunk}.bam",sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
         #expand("results/detect/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
         #"results/MiniMapIndex/genome.mmi",
         #"results/dnascent_index/index.dnascent",
