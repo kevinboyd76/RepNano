@@ -201,7 +201,7 @@ rule dnascent_forksense:
 ##                       Sort Detect Chunks                     ##
 ##################################################################
 
-rule dnascent_forksense:
+rule sort_dnascent_detect:
     input:
         bam_file="results/detect/{sample}_chunk_{chunk}.bam"
     output:
