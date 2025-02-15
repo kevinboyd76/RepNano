@@ -18,7 +18,7 @@ samples_table = pd.read_csv(config["nanopore_samples_sheet"]).set_index("alias",
 
 rule all:
     input:
-        expand("results/forkSense/{sample}_chunk_{chunk}/forksense.txt",sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"]))),
+        expand("results/forkSense/{sample}/forksense.txt",sample=samples_table["alias"]),
         expand("results/detect_combined/{sample}.bam",sample=samples_table["alias"]),
         expand("results/detect_sorted/{sample}_chunk_{chunk}.bam",sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
         #expand("results/detect/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
@@ -168,37 +168,6 @@ rule dnascent_detect:
         """
 
 ##################################################################
-##                       DNAscent Forksense                     ##
-##################################################################
-
-rule dnascent_forksense:
-    input:
-        bam_file="results/detect/{sample}_chunk_{chunk}.bam"
-    output:
-        output_dir=directory("results/forkSense/{sample}_chunk_{chunk}"),
-        forksense="results/forkSense/{sample}_chunk_{chunk}/forksense.txt",
-        BrdU="results/forkSense/{sample}_chunk_{chunk}/BrdU_DNAscent_forkSense.bed",
-        EdU="results/forkSense/{sample}_chunk_{chunk}/EdU_DNAscent_forkSense.bed",
-        left_stress="results/forkSense/{sample}_chunk_{chunk}/leftForks_DNAscent_forkSense_stressSignatures.bed",
-        left="results/forkSense/{sample}_chunk_{chunk}/leftForks_DNAscent_forkSense.bed",
-        origins="results/forkSense/{sample}_chunk_{chunk}/origins_DNAscent_forkSense.bed",
-        right_stress="results/forkSense/{sample}_chunk_{chunk}/rightForks_DNAscent_forkSense_stressSignatures.bed",
-        right="results/forkSense/{sample}_chunk_{chunk}/rightForks_DNAscent_forkSense.bed",
-        terminations="results/forkSense/{sample}_chunk_{chunk}/terminations_DNAscent_forkSense.bed"
-    params:
-        label_order=config["label_order"],
-        forkSense_threads=config["forkSense_threads"]
-    envmodules:
-        config["dnascent"],
-        config["cuda"]
-    shell:
-        """
-        mkdir -p {output.output_dir}
-        cd {output.output_dir}
-        dnascent forkSense -d ../../../{input.bam_file} -o forksense.txt -t {params.forkSense_threads} --order {params.label_order} --markAnalogues --markOrigins --markTerminations --markForks --makeSignatures
-        """
-
-##################################################################
 ##                       Sort Detect Chunks                     ##
 ##################################################################
 
@@ -237,7 +206,36 @@ rule combine_detect_chunks:
         samtools index -@ {params.samtools_threads} {output.combined_bam_file}
         """
 
+##################################################################
+##                       DNAscent Forksense                     ##
+##################################################################
 
+rule dnascent_forksense:
+    input:
+        bam_file="results/detect_combined/{sample}.bam"
+    output:
+        output_dir=directory("results/forkSense/{sample}"),
+        forksense="results/forkSense/{sample}/forksense.txt",
+        BrdU="results/forkSense/{sample}/BrdU_DNAscent_forkSense.bed",
+        EdU="results/forkSense/{sample}/EdU_DNAscent_forkSense.bed",
+        left_stress="results/forkSense/{sample}/leftForks_DNAscent_forkSense_stressSignatures.bed",
+        left="results/forkSense/{sample}/leftForks_DNAscent_forkSense.bed",
+        origins="results/forkSense/{sample}/origins_DNAscent_forkSense.bed",
+        right_stress="results/forkSense/{sample}/rightForks_DNAscent_forkSense_stressSignatures.bed",
+        right="results/forkSense/{sample}/rightForks_DNAscent_forkSense.bed",
+        terminations="results/forkSense/{sample}/terminations_DNAscent_forkSense.bed"
+    params:
+        label_order=config["label_order"],
+        forkSense_threads=config["forkSense_threads"]
+    envmodules:
+        config["dnascent"],
+        config["cuda"]
+    shell:
+        """
+        mkdir -p {output.output_dir}
+        cd {output.output_dir}
+        dnascent forkSense -d ../../../{input.bam_file} -o forksense.txt -t {params.forkSense_threads} --order {params.label_order} --markAnalogues --markOrigins --markTerminations --markForks --makeSignatures
+        """
 
 
 
