@@ -197,6 +197,25 @@ rule dnascent_forksense:
         dnascent forkSense -d ../../../{input.bam_file} -o forksense.txt -t {params.forkSense_threads} --order {params.label_order} --markAnalogues --markOrigins --markTerminations --markForks --makeSignatures
         """
 
+##################################################################
+##                       Sort Detect Chunks                     ##
+##################################################################
+
+rule dnascent_forksense:
+    input:
+        bam_file="results/detect/{sample}_chunk_{chunk}.bam"
+    output:
+        sorted_bam_file="results/detect_sorted/{sample}_chunk_{chunk}.bam"
+    envmodules:
+        config["samtools"]
+    params:
+        samtools_threads=config["samtools_threads"]
+    shell:
+        """
+        samtools sort {input.bam_file} > {output.sorted_bam_file}
+        samtools index {ouput.sort_bam_file}
+        """
+
 
 ##################################################################
 ##                    Combine Detect Chunks                     ##
@@ -204,7 +223,7 @@ rule dnascent_forksense:
 
 rule combine_detect_chunks:
     input:
-        bam_files=lambda wildcards: expand("results/detect/{sample}_chunk_{chunk}.bam", sample=wildcards.sample, chunk=range(int(config["chunks_per_bam"])))
+        bam_files=lambda wildcards: expand("results/detect_sorted/{sample}_chunk_{chunk}.bam", sample=wildcards.sample, chunk=range(int(config["chunks_per_bam"])))
     output:
         combined_bam_file="results/detect_combined/{sample}.bam"
     envmodules:
