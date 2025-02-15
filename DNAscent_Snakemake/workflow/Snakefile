@@ -18,9 +18,10 @@ samples_table = pd.read_csv(config["nanopore_samples_sheet"]).set_index("alias",
 
 rule all:
     input:
-        "results/MiniMapIndex/genome.mmi",
-        "results/dnascent_index/index.dnascent",
-        expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
+        expand("results/detect/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
+        #"results/MiniMapIndex/genome.mmi",
+        #"results/dnascent_index/index.dnascent",
+        #expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
 
 
 ##################################################################
