@@ -39,6 +39,8 @@ output_dir="$2"
 num_chunks="$3"
 threads="$4"
 
+base_name=$(basename $input_bam)
+
 # Create output directory
 mkdir -p "$output_dir"
 
