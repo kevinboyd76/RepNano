@@ -18,7 +18,8 @@ samples_table = pd.read_csv(config["nanopore_samples_sheet"]).set_index("alias",
 
 rule all:
     input:
-        expand("results/forkSense/{sample}_chunk_{chunk}/forksense.txt",sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
+        expand("results/forkSense/{sample}_chunk_{chunk}/forksense.txt",sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"]))),
+        expand("results/detect_combined/{sample}.bam",sample=samples_table["alias"])
         #expand("results/detect/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
         #"results/MiniMapIndex/genome.mmi",
         #"results/dnascent_index/index.dnascent",
@@ -203,7 +204,7 @@ rule dnascent_forksense:
 
 rule combine_detect_chunks:
     input:
-        bam_files=expand("results/detect/{sample}_chunk_{chunk}.bam", chunk=range(int(config["chunks_per_bam"])))
+        bam_files=expand("results/detect/{sample}_chunk_*.bam", chunk=range(int(config["chunks_per_bam"])))
     output:
         combined_bam_file="results/detect_combined/{sample}.bam"
     envmodules:
