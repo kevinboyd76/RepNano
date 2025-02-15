@@ -28,3 +28,8 @@ dnascent_detect:
     gres: "--gres=gpu:1"
     cpus-per-task: 12
     mem: 16GB
+dnascent_forksense:
+    partition: gpu
+    gres: "--gres=gpu:1"
+    cpus-per-task: 12
+    mem: 16GB
