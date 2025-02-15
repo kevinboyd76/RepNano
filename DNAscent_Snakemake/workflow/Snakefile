@@ -149,10 +149,10 @@ rule dnascent_index:
 rule dnascent_detect:
     input:
         index="results/dnascent_index/index.dnascent",
-        bam_file=expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"]))),
+        bam_file="results/split_bams/{sample}_chunk_{chunk}.bam",
         genome_fasta="results/MiniMapIndex/genome.fa"
     output:
-        expand("results/detect/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
+        "results/detect/{sample}_chunk_{chunk}.bam"
     params:
         minimum_read_length=config["minimum_read_length"],
         detect_threads=config["detect_threads"]
