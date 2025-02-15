@@ -71,7 +71,8 @@ rule demux_alignments:
     input:
         "results/aligned/DoradoCallAndAlign.bam"
     output:
-        demuxed_bams=", ".join([f'"{str(element)}.bam"' for element in samples_table["alias"]])
+        expand("results/demuxed/{sample}.bam", sample=samples_table["alias"]),
+        #demuxed_bams=", ".join([f'"{str(element)}.bam"' for element in samples_table["alias"]])
     params:
         samples_sheet=config["nanopore_samples_sheet"],
         alias_names=" ".join([f'"{str(element)}"' for element in samples_table["alias"]])
