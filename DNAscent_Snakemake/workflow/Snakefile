@@ -161,5 +161,5 @@ rule dnascent_detect:
         config["cuda"]
     shell:
         """
-        dnascent detect -b {input.bam} -r {input.genome_fasta} -i {input.index} -o {output} --GPU 0 --length {params.minimum_read_length} --threads {params.detect_threads}
+        dnascent detect -b {input.bam_file} -r {input.genome_fasta} -i {input.index} -o {output} --GPU 0 --length {params.minimum_read_length} --threads {params.detect_threads}
         """
