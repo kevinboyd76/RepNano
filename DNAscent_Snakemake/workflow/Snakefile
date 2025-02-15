@@ -197,3 +197,26 @@ rule dnascent_forksense:
         """
 
 
+##################################################################
+##                    Combine Detect Chunks                     ##
+##################################################################
+
+rule combine_detect_chunks:
+    input:
+        bam_files=expand("results/detect/{sample}_chunk_{chunk}.bam", chunk=range(int(config["chunks_per_bam"])))
+    output:
+        combined_bam_file="results/detect_combined/{sample}.bam"
+    envmodules:
+        config["samtools"]
+    params:
+        samtools_threads=config["samtools_threads"]
+    shell:
+        """
+        samtools merge -@ {params.samtools_threads} {output.combined_bam_file} {input.bam_files}
+        samtools index -@ {params.samtools_threads} {output.combined_bam_file}
+        """
+
+
+
+
+
