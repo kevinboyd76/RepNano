@@ -17,3 +17,6 @@ make_genome_index:
     mem: 16GB
 demux_alignments:
     cpus-per-task: 24
+split_bams:
+    cpus-per-task: 12
+    
