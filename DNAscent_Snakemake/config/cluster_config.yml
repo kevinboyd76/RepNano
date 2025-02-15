@@ -21,3 +21,5 @@ split_bams:
     cpus-per-task: 12
 dnascent_index:
     cpus-per-task: 4
+    partition: gpu
+    gres: "--gres=gpu:1"

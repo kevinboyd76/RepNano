@@ -132,7 +132,8 @@ rule dnascent_index:
     output:
         "results/dnascent_index/index.dnascent"
     envmodules:
-        config["dnascent"]
+        config["dnascent"],
+        config["cuda"]
     shell:
         """
         dnascent index {input}
