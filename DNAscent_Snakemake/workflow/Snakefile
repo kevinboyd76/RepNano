@@ -19,7 +19,7 @@ samples_table = pd.read_csv(config["nanopore_samples_sheet"]).set_index("alias",
 rule all:
     input:
         "results/MiniMapIndex/genome.mmi",
-        expand("results/demuxed/{sample}.bam", sample=samples_table["alias"])
+        expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(1,int(config["chunks_per_bam"])+1))
 
 
 ##################################################################
@@ -106,11 +106,11 @@ rule split_bams:
     input:
         expand("results/demuxed/{sample}.bam", sample=samples_table["alias"])
     output:
-        split_dir=directory("results/split_bams/{experiment_id}")
+        expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(1,int(config["chunks_per_bam"])+1))
     params:
-        reads_per_chunk=config["chunks_per_bam"],
+        chunks_per_bam=config["chunks_per_bam"],
         samtools_threads=config["samtools_threads"],
-        demux_dir="results/demultiplexed/{experiment_id}_demuxdir"
+        demux_dir="./results/demuxed/"
     envmodules:
         config["samtools"]
     shell:
@@ -119,7 +119,7 @@ rule split_bams:
 
         for in_bam in "${{inputs[@]}}"; do
             echo "Processing file: $in_bam"  # Debugging step (optional)
-            ./bin/split_bam_by_reads.sh "$in_bam" "{output.split_dir}/" "{params.reads_per_chunk}" "{params.samtools_threads}"
+            ./bin/split_bam_by_reads.sh "$in_bam" "./results/split_bams/" "{params.chunks_per_bam}" "{params.samtools_threads}"
         done
         """
 
