@@ -214,7 +214,7 @@ rule sort_dnascent_detect:
     shell:
         """
         samtools sort {input.bam_file} > {output.sorted_bam_file}
-        samtools index {ouput.sorted_bam_file}
+        samtools index {output.sorted_bam_file}
         """
 
 
