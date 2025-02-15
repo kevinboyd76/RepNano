@@ -136,7 +136,7 @@ rule dnascent_index:
         config["cuda"]
     shell:
         """
-        dnascent index {input}
+        dnascent index {input}/
         """
 
 
