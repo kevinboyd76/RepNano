@@ -7,7 +7,7 @@ __default__:
     output: results/logs/slurm-%x.%A.%a.log
     gres: ""
 Dorado_baseCalling_alignment:
-    partition: gpu  # Use GPU partition for this rule
+    partition: gpu
     gres: "--gres=gpu:1"
     cpus-per-task: 6
     mem: 16GB
@@ -23,3 +23,8 @@ dnascent_index:
     cpus-per-task: 4
     partition: gpu
     gres: "--gres=gpu:1"
+dnascent_detect:
+    partition: gpu
+    gres: "--gres=gpu:1"
+    cpus-per-task: 12
+    mem: 16GB

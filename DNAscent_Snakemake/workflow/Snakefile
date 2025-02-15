@@ -141,27 +141,24 @@ rule dnascent_index:
 
 
 
-# ##################################################################
-# ##                       DNAscent Detect                        ##
-# ##################################################################
+##################################################################
+##                       DNAscent Detect                        ##
+##################################################################
 
-# rule dnascent_detect:
-#     input:
-#         split_dir="results/split_bams/{experiment_id}"
-#     output:
-#         detect_dir=directory("results/detect/{experiment_id}")
-#     params:
-#         reads_per_chunk=config["reads_per_chunk"],
-#         samtools_threads=config["samtools_threads"],
-#         split_dir="results/split_bams/{experiment_id}"
-#     envmodules:
-#         config["samtools"]
-#     shell:
-#         """
-#         inputs=("{params.split_dir}"/*.bam)  # Expand BAM files inside demux directory
-
-#         for in_bam in "${{inputs[@]}}"; do
-#             echo "Processing file: $in_bam"  # Debugging step (optional)
-#             ./bin/split_bam_by_reads.sh "$in_bam" "{output.split_dir}/" "{params.reads_per_chunk}" "{params.samtools_threads}"
-#         done
-#         """
+rule dnascent_detect:
+    input:
+        index="results/dnascent_index/index.dnascent",
+        bam_file=expand("results/split_bams/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"]))),
+        genome_fasta="results/MiniMapIndex/genome.fa"
+    output:
+        expand("results/detect/{sample}_chunk_{chunk}.bam", sample=samples_table["alias"],chunk=range(int(config["chunks_per_bam"])))
+    params:
+        minimum_read_length=config["minimum_read_length"],
+        detect_threads=config[detect_threads]
+    envmodules:
+        config["dnascent"],
+        config["cuda"]
+    shell:
+        """
+        dnascent detect -b {input.bam} -r {input.genome_fasta} -i {input.index} -o {output} --GPU 0 --length {params.minimum_read_length} --threads {params.detect_threads}
+        """
