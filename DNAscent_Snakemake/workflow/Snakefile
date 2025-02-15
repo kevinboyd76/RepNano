@@ -193,7 +193,7 @@ rule dnascent_forksense:
         """
         mkdir -p {output.output_dir}
         cd {output.output_dir}
-        dnascent forkSense -d ../../{input.bam_file} -o forksense.txt -t {params.forkSense_threads} --order {params.label_order} --markAnalogues --markOrigins --markTerminations --markForks --makeSignatures
+        dnascent forkSense -d ../../../{input.bam_file} -o forksense.txt -t {params.forkSense_threads} --order {params.label_order} --markAnalogues --markOrigins --markTerminations --markForks --makeSignatures
         """
 
 
