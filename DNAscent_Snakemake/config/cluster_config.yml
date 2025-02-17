@@ -10,7 +10,7 @@ Dorado_baseCalling_alignment:
     partition: gpu
     gres: "--gres=gpu:1"
     cpus-per-task: 6
-    mem: 16GB
+    mem: 32GB
 make_genome_index:
     partition: serial  # Run on normal CPU nodes
     cpus-per-task: 8
