@@ -22,16 +22,14 @@
 #
 # Author:
 #   Chris Sansam
-#   2025-02-06
+#   2025-02-17
 #
 
 #!/bin/bash
 
-set -e  # Exit on error
+#!/bin/bash
 
-# Debugging: Print the user running the script
-echo "Running as user: $(whoami)"
-echo "Current working directory: $(pwd)"
+set -e  # Exit on error
 
 # Check for required arguments
 if [ "$#" -ne 4 ]; then
@@ -47,46 +45,18 @@ threads="$4"
 
 base_name=$(basename -s .bam "$input_bam")
 
-# Debugging: Check if input BAM file exists and is readable
-if [ ! -f "$input_bam" ]; then
-  echo "ERROR: Input BAM file does not exist: $input_bam"
-  exit 1
-elif [ ! -r "$input_bam" ]; then
-  echo "ERROR: Input BAM file is not readable: $input_bam"
-  ls -l "$input_bam"
-  exit 1
-fi
-
-# Debugging: Check output directory permissions
-if [ ! -d "$output_dir" ]; then
-  echo "ERROR: Output directory does not exist: $output_dir"
-  exit 1
-elif [ ! -w "$output_dir" ]; then
-  echo "ERROR: Output directory is not writable: $output_dir"
-  ls -ld "$output_dir"
-  exit 1
-fi
-
-# Debugging: Print file ownership and permissions
-echo "File permissions for input BAM:"
-ls -l "$input_bam"
-echo "Directory permissions for output:"
-ls -ld "$output_dir"
-
-# Create output directory if it does not exist
+# Create output directory if it doesn't exist
 mkdir -p "$output_dir"
 
-# Determine the total number of reads in the BAM file
+# Get the total number of reads in the BAM file
 total_reads=$(samtools view -c "$input_bam")
-if [ $? -ne 0 ]; then
-  echo "ERROR: Failed to count reads in BAM file. Check samtools installation and permissions."
-  exit 1
-fi
-
 reads_per_chunk=$(( (total_reads + num_chunks - 1) / num_chunks ))  # Round up division
 
 echo "Total reads in BAM: $total_reads"
 echo "Splitting into $num_chunks chunks, each containing approximately $reads_per_chunk reads."
+
+# Extract BAM header once
+samtools view -H "$input_bam" > "${output_dir}/${base_name}_header.sam"
 
 # Split BAM file into chunks
 for ((i=0; i<num_chunks; i++)); do
@@ -95,22 +65,21 @@ for ((i=0; i<num_chunks; i++)); do
 
   output_chunk="${output_dir}/${base_name}_chunk_${i}.bam"
 
-  # Debugging: Check if the output file is writable before writing
-  touch "$output_chunk" 2>/dev/null || { echo "ERROR: Cannot write to $output_chunk"; exit 1; }
+  echo "Processing chunk $i ($start to $end)..."
 
   # Extract reads and save to chunk
-  samtools view -b -@ "$threads" "$input_bam" | \
-    samtools split -u -f "${output_dir}/${base_name}_chunk_%d.bam" - "$num_chunks"
+  samtools view -@ "$threads" "$input_bam" | awk -v s="$start" -v e="$end" 'NR > s && NR <= e' | \
+    cat "${output_dir}/${base_name}_header.sam" - | samtools view -b -@ "$threads" > "$output_chunk"
 
   echo "Created: $output_chunk"
 done
 
 echo "BAM splitting complete: Chunks stored in $output_dir"
 
-# **Index all BAM files using the specified number of threads**
+# Index all BAM files
 echo "Indexing BAM files with $threads threads..."
 for bam_file in "$output_dir"/*.bam; do
-  if [ -s "$bam_file" ]; then  # Check if file exists and is non-empty
+  if [ -s "$bam_file" ]; then
     echo "Indexing $bam_file..."
     samtools index -@ "$threads" "$bam_file"
   else
@@ -119,4 +88,3 @@ for bam_file in "$output_dir"/*.bam; do
 done
 
 echo "All BAM files have been indexed successfully!"
-
