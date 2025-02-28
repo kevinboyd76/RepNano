@@ -8,7 +8,8 @@ __default__:
     gres: ""
 Dorado_baseCalling_alignment:
     partition: gpu
-    gres: "--gres=gpu:1"
+    # constrain based on the availability of suitable gpus (ie l40s or a100)
+    gres: "--gres=gpu:1 --constraint=l40s"
     cpus-per-task: 6
     mem: 32GB
 make_genome_index:
