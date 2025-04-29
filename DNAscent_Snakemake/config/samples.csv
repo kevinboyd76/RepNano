@@ -1,3 +1,5 @@
 experiment_id,kit,flow_cell_id,alias,barcode
-Jan292025,SQK-RBK114-96,PBA15434,test,barcode86
-
+Apr29_20250428,SQK-RBK114-96,PBA15434,5_min,barcode48
+Apr29_20250428,SQK-RBK114-96,PBA15434,10_min,barcode49
+Apr29_20250428,SQK-RBK114-96,PBA15434,15_min,barcode50
+Apr29_20250428,SQK-RBK114-96,PBA15434,20_min,barcode51
